@@ -53,8 +53,8 @@ export default function DossierPanel({ ministerName }) {
   ].filter(d => d.value > 0);
 
   const barData = [
-    { name: 'Support', score: data.supportScore, fill: '#00c853' },
-    { name: 'Resign Demand', score: data.resignScore, fill: '#ff1744' },
+    { name: 'Public Confidence', score: data.supportScore, fill: '#00c853' },
+    { name: 'Evidence Level', score: data.resignScore, fill: '#ff1744' },
   ];
 
   const displayed = showAll ? data.records : data.records.slice(0, 15);
@@ -64,15 +64,13 @@ export default function DossierPanel({ ministerName }) {
       {/* SCORES + CHART ROW */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div className="stat-box">
-          <div className="stat-label">Citizen Support Score</div>
-          <div className="text-4xl font-bold text-[#00c853] mb-2">{data.supportScore}</div>
+          <div className="stat-label">Public Confidence Score</div>
           <div className="score-bar">
             <div className="score-fill" style={{ width: `${data.supportScore * 10}%`, background: '#00c853' }} />
           </div>
         </div>
         <div className="stat-box">
-          <div className="stat-label">Resign Demand Score</div>
-          <div className="text-4xl font-bold text-[#ff1744] mb-2">{data.resignScore}</div>
+          <div className="stat-label">Evidence Level</div>
           <div className="score-bar">
             <div className="score-fill" style={{ width: `${data.resignScore * 10}%`, background: '#ff1744' }} />
           </div>

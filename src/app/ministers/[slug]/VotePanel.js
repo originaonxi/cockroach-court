@@ -70,7 +70,7 @@ export default function VotePanel({ ministerName, supportScore, resignScore }) {
             <p className="text-2xl mb-2">{voted === 'support' ? '👍' : '📢'}</p>
             <p className="text-white font-semibold">
               You voted to <span className={voted === 'support' ? 'text-[#00c853]' : 'text-[#ff1744]'}>
-                {voted === 'support' ? 'Support' : 'Demand Resignation of'} {ministerName}
+                {voted === 'support' ? 'Confidence' : 'Low Confidence'} {ministerName}
               </span>
             </p>
             <p className="text-xs text-[#555] mt-2">This vote is cryptographically linked to your verified identity.</p>
@@ -86,7 +86,7 @@ export default function VotePanel({ ministerName, supportScore, resignScore }) {
                 className="bg-[#00c85322] hover:bg-[#00c85344] border border-[#00c85344] text-white font-semibold py-4 px-6 rounded-xl transition text-center"
               >
                 <div className="text-2xl mb-1">👍</div>
-                <div className="text-sm">Support</div>
+                <div className="text-sm">High Confidence</div>
                 <div className="text-xs text-[#00c853] font-bold mt-1">{supportScore.toFixed(1)}</div>
               </button>
               <button
@@ -94,7 +94,7 @@ export default function VotePanel({ ministerName, supportScore, resignScore }) {
                 className="bg-[#ff174422] hover:bg-[#ff174444] border border-[#ff174444] text-white font-semibold py-4 px-6 rounded-xl transition text-center"
               >
                 <div className="text-2xl mb-1">📢</div>
-                <div className="text-sm">Demand Resignation</div>
+                <div className="text-sm">Low Confidence</div>
                 <div className="text-xs text-[#ff1744] font-bold mt-1">{resignScore.toFixed(1)}</div>
               </button>
             </div>

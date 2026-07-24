@@ -54,7 +54,7 @@ body {
 .status-Clean { background: #00c85322; color: #00c853; border: 1px solid #00c85344; }
 .status-Under-Watch { background: #ff910022; color: #ff9100; border: 1px solid #ff910044; }
 .status-Case-Pending { background: #ff174422; color: #ff1744; border: 1px solid #ff174444; }
-.status-Resign-Demanded { background: #d5000022; color: #ff1744; border: 1px solid #ff174466; }
+.status-Low-Confidence { background: #d5000022; color: #ff5252; border: 1px solid #ff525266; }
 
 .stat-box {
   background: #12122a;

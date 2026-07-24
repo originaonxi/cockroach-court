@@ -11,31 +11,31 @@ const SCORE_COLOR = (score) => {
 
 export default async function HomePage() {
   const ministers = await fetchAllMinisters();
-  const ranked = [...ministers].sort((a, b) => (b['Citizen Support Score'] || 0) - (a['Citizen Support Score'] || 0));
+  const ranked = [...ministers].sort((a, b) => (b['Public Confidence Score'] || b['Citizen Support Score'] || 0) - (a['Public Confidence Score'] || a['Citizen Support Score'] || 0));
 
   return (
     <div>
       {/* HERO */}
       <div className="text-center py-10 mb-8">
         <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-          <span className="text-[#e94560]">The Cockroach</span>{' '}
-          <span className="text-[#f5c518]">Court</span>
+          <span className="text-[#e94560]">The Public</span>{' '}
+          <span className="text-[#f5c518]">Trust Layer</span>
         </h1>
         <p className="text-lg text-[#888] max-w-2xl mx-auto">
-          Every Union Cabinet minister. Every pending case. Every CAG audit flag. Every rupee of declared assets. Tracked live.
+          Evidence-based Public Confidence Scores for every Union Cabinet minister. Tracked live from official government data sources.
         </p>
         <div className="flex items-center justify-center gap-6 mt-4 text-sm text-[#666]">
           <span>⬡ {ministers.length} ministers</span>
-          <span>⬡ 30 days of data</span>
-          <span>⬡ 5 linked data sources</span>
+          <span>⬡ Evidence-based</span>
+          <span>⬡ 10 linked data sources</span>
         </div>
       </div>
 
       {/* MINISTERS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {ranked.map((m, i) => {
-          const supportScore = m['Citizen Support Score'] || 0;
-          const resignScore = m['Resign Demand Score'] || 0;
+          const score = m['Public Confidence Score'] || m['Citizen Support Score'] || 0;
+          const evidenceScore = m['Evidence Confidence Level'] || m['Resign Demand Score'] || 0;
           const status = (m['Status'] || 'Clean').replace(/\s+/g, '-');
           const cases = m['Pending Court Cases'] || 0;
           const cag = m['CAG Flags'] || 0;
@@ -59,25 +59,25 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              {/* Support Score */}
+              {/* Public Confidence Score */}
               <div className="mb-2">
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-[#888]">Support Score</span>
-                  <span className="font-bold" style={{ color: SCORE_COLOR(supportScore) }}>{supportScore.toFixed(1)}</span>
+                  <span className="text-[#888]">Public Confidence</span>
+                  <span className="font-bold" style={{ color: SCORE_COLOR(score) }}>{score.toFixed(1)}</span>
                 </div>
                 <div className="score-bar">
-                  <div className="score-fill" style={{ width: `${supportScore * 10}%`, background: SCORE_COLOR(supportScore) }} />
+                  <div className="score-fill" style={{ width: `${score * 10}%`, background: SCORE_COLOR(score) }} />
                 </div>
               </div>
 
-              {/* Resign Demand */}
+              {/* Evidence Confidence Level */}
               <div className="mb-3">
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-[#888]">Resign Demand</span>
-                  <span className="font-bold" style={{ color: resignScore > 5 ? '#ff1744' : '#888' }}>{resignScore.toFixed(1)}</span>
+                  <span className="text-[#888]">Evidence Level</span>
+                  <span className="font-bold" style={{ color: evidenceScore > 5 ? '#ff1744' : '#888' }}>{evidenceScore.toFixed(1)}</span>
                 </div>
                 <div className="score-bar">
-                  <div className="score-fill" style={{ width: `${resignScore * 10}%`, background: resignScore > 5 ? '#ff1744' : '#555' }} />
+                  <div className="score-fill" style={{ width: `${evidenceScore * 10}%`, background: evidenceScore > 5 ? '#ff1744' : '#555' }} />
                 </div>
               </div>
 

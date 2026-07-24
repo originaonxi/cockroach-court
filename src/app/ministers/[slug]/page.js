@@ -10,8 +10,8 @@ export async function generateMetadata({ params }) {
   const m = await fetchMinisterBySlug(slug);
   if (!m) return { title: 'Not Found' };
   return {
-    title: `${m.Name} — The Cockroach Court`,
-    description: `${m.Name} | ${m.Rank} | ${m.Ministry} | Support: ${m['Citizen Support Score']?.toFixed(1)}/10 | Resign Demand: ${m['Resign Demand Score']?.toFixed(1)}/10 | Pending cases: ${m['Pending Court Cases'] || 0}`,
+    title: `${m.Name} — The Public Trust Layer`,
+    description: `${m.Name} | ${m.Rank} | ${m.Ministry} | Public Confidence: ${(m['Public Confidence Score'] || m['Citizen Support Score'] || 0)?.toFixed(1)}/10 | Evidence Level: ${(m['Evidence Confidence Level'] || m['Resign Demand Score'] || 0)?.toFixed(1)}/10 | Pending cases: ${m['Pending Court Cases'] || 0}`,
   };
 }
 
@@ -28,8 +28,8 @@ export default async function MinisterPage({ params }) {
   if (!m) notFound();
 
   const sc = STATUS_COLORS[m['Status']?.replace(/\s+/g, '-')] || STATUS_COLORS['Clean'];
-  const supportScore = m['Citizen Support Score'] || 0;
-  const resignScore = m['Resign Demand Score'] || 0;
+  const publicConfidenceScore = m['Public Confidence Score'] || m['Citizen Support Score'] || 0;
+  const evidenceLevel = m['Evidence Confidence Level'] || m['Resign Demand Score'] || 0;
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -66,24 +66,24 @@ export default async function MinisterPage({ params }) {
       {/* SCORES ROW */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div className="stat-box">
-          <div className="stat-label">Citizen Support Score</div>
-          <div className="text-4xl font-bold mb-2" style={{ color: supportScore >= 5 ? '#00c853' : '#ff9100' }}>
-            {supportScore.toFixed(1)}
+          <div className="stat-label">Public Confidence Score</div>
+          <div className="text-4xl font-bold mb-2" style={{ color: publicConfidenceScore >= 5 ? '#00c853' : '#ff9100' }}>
+            {publicConfidenceScore.toFixed(1)}
           </div>
           <div className="score-bar mb-2">
-            <div className="score-fill" style={{ width: `${supportScore * 10}%`, background: supportScore >= 5 ? '#00c853' : '#ff9100' }} />
+            <div className="score-fill" style={{ width: `${publicConfidenceScore * 10}%`, background: publicConfidenceScore >= 5 ? '#00c853' : '#ff9100' }} />
           </div>
-          <p className="text-xs text-[#666]">0–10 scale based on verified citizen input, quadratic-weighted.</p>
+          <p className="text-xs text-[#666]">0–10 evidence-based score derived from verified public records, court data, CAG audits, and citizen reports.</p>
         </div>
         <div className="stat-box">
-          <div className="stat-label">Resign Demand Score</div>
-          <div className="text-4xl font-bold mb-2" style={{ color: resignScore >= 5 ? '#ff1744' : '#888' }}>
-            {resignScore.toFixed(1)}
+          <div className="stat-label">Evidence Confidence Level</div>
+          <div className="text-4xl font-bold mb-2" style={{ color: evidenceLevel >= 5 ? '#ff1744' : '#888' }}>
+            {evidenceLevel.toFixed(1)}
           </div>
           <div className="score-bar mb-2">
-            <div className="score-fill" style={{ width: `${resignScore * 10}%`, background: resignScore >= 5 ? '#ff1744' : '#555' }} />
+            <div className="score-fill" style={{ width: `${evidenceLevel * 10}%`, background: evidenceLevel >= 5 ? '#ff1744' : '#555' }} />
           </div>
-          <p className="text-xs text-[#666]">Aggregate citizen demand for resignation. 8+ = active protest movement.</p>
+          <p className="text-xs text-[#666]">Confidence in available evidence. High = verified records exist. Low = insufficient evidence.</p>
         </div>
       </div>
 
@@ -101,9 +101,7 @@ export default async function MinisterPage({ params }) {
           </div>
         ))}
       </div>
-
-      {/* VOTING PANEL */}
-      <VotePanel ministerName={m.Name} supportScore={supportScore} resignScore={resignScore} />
+      <VotePanel ministerName={m.Name} supportScore={publicConfidenceScore} resignScore={evidenceLevel} />
 
       {/* DATA SOURCES — ALL GOVERNMENT RECORDS */}
       <div className="minister-card p-6 mb-8">
@@ -114,17 +112,17 @@ export default async function MinisterPage({ params }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {m['ECI Affidavit URL'] && (
             <div className="bg-[#12122a] border border-[#2a2a4a] rounded-xl p-4">
-              <div className="text-xs text-[#888] uppercase tracking-wider mb-1">📋 Election Commission</div>
-              <div className="text-sm text-white font-medium">{m.Name} — Affidavit</div>
+              <div className="text-xs text-[#888] uppercase tracking-wider mb-1">📋 ADR (MyNeta) — Sworn Affidavit</div>
+              <div className="text-sm text-white font-medium">{m.Name} — Assets, Cases, Education</div>
               <a href={m['ECI Affidavit URL']} target="_blank" className="source-link text-xs mt-1 inline-block">
-                View sworn affidavit (assets, criminal cases) ↗
+                View sworn affidavit: assets, criminal cases, education ↗
               </a>
             </div>
           )}
           {m['PRS India Profile'] && (
             <div className="bg-[#12122a] border border-[#2a2a4a] rounded-xl p-4">
               <div className="text-xs text-[#888] uppercase tracking-wider mb-1">📊 PRS Legislative Research</div>
-              <div className="text-sm text-white font-medium">{m.Name} — MP Track</div>
+              <div className="text-sm text-white font-medium">{m.Name} — Parliamentary Track</div>
               <a href={m['PRS India Profile']} target="_blank" className="source-link text-xs mt-1 inline-block">
                 View attendance, questions, bills, debates ↗
               </a>
