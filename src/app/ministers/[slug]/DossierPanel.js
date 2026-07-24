@@ -171,7 +171,7 @@ export default function DossierPanel({ ministerName }) {
               className="bg-[#2a2a4a] hover:bg-[#3a3a5a] text-white text-xs font-semibold py-2 px-4 rounded-lg transition">
               Airtable ↗
             </a>
-            <a href="https://github.com" target="_blank"
+            <a href="https://github.com/originaonxi/cockroach-court" target="_blank"
               className="bg-[#e94560] hover:bg-[#d63850] text-white text-xs font-semibold py-2 px-4 rounded-lg transition">
               Edit on GitHub ↗
             </a>
