@@ -65,12 +65,14 @@ export default function DossierPanel({ ministerName }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div className="stat-box">
           <div className="stat-label">Public Confidence Score</div>
+          <div className="text-4xl font-bold text-[#00c853] mb-2">{data.supportScore}</div>
           <div className="score-bar">
             <div className="score-fill" style={{ width: `${data.supportScore * 10}%`, background: '#00c853' }} />
           </div>
         </div>
         <div className="stat-box">
           <div className="stat-label">Evidence Level</div>
+          <div className="text-4xl font-bold text-[#ff1744] mb-2">{data.resignScore}</div>
           <div className="score-bar">
             <div className="score-fill" style={{ width: `${data.resignScore * 10}%`, background: '#ff1744' }} />
           </div>
