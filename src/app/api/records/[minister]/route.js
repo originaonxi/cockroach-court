@@ -1,14 +1,15 @@
 import Airtable from 'airtable';
+import { NextResponse } from 'next/server';
 
-export default async function handler(req, res) {
-  const { minister } = req.query;
+export async function GET(request, { params }) {
+  const { minister } = await params;
   const decodedName = decodeURIComponent(minister);
 
   const PAT = process.env.AIRTABLE_API_KEY;
   const BASE_ID = process.env.AIRTABLE_BASE_ID;
   
   if (!PAT || !BASE_ID) {
-    return res.status(500).json({ error: 'Missing Airtable credentials' });
+    return NextResponse.json({ error: 'Missing Airtable credentials' }, { status: 500 });
   }
 
   const base = new Airtable({ apiKey: PAT }).base(BASE_ID);
@@ -43,7 +44,7 @@ export default async function handler(req, res) {
     const supportScore = total > 0 ? Math.max(0, Math.min(10, +(5 + (positive - negative) * 0.6).toFixed(1))) : 5;
     const resignScore = total > 0 ? Math.max(0, Math.min(10, +(5 + (negative - positive) * 0.4).toFixed(1))) : 1;
 
-    res.status(200).json({
+    return NextResponse.json({
       minister: decodedName,
       totalRecords: data.length,
       positive, negative, neutral,
@@ -51,6 +52,6 @@ export default async function handler(req, res) {
       records: data,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
