@@ -17,16 +17,27 @@ const CAT_COLOR = {
 export default function ChargesPanel({ ministerName }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     fetch(`/api/charges/${encodeURIComponent(ministerName)}`)
-      .then(r => r.json())
-      .then(d => { setData(d); setLoading(false); })
-      .catch(() => setLoading(false));
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('http')))
+      .then(d => { if (d && d.error) throw new Error(d.error); setData(d); setLoading(false); })
+      .catch(() => { setError(true); setLoading(false); });
   }, [ministerName]);
 
   if (loading) return null;
-  if (!data || !data.count) {
+
+  if (error || !data) {
+    return (
+      <div className="minister-card p-6 mb-6">
+        <h2 className="text-lg font-bold text-white mb-2">⚖ Declared Legal Matters</h2>
+        <p className="text-sm text-[#ff9100]">Could not load legal records from the source right now. This is a data-load error — <strong>not</strong> a statement that no cases exist. Please retry.</p>
+      </div>
+    );
+  }
+
+  if (data.count === 0) {
     return (
       <div className="minister-card p-6 mb-6">
         <h2 className="text-lg font-bold text-white mb-2">⚖ Declared Legal Matters</h2>
@@ -35,7 +46,6 @@ export default function ChargesPanel({ ministerName }) {
     );
   }
 
-  // group by category
   const byCat = {};
   data.charges.forEach(c => { (byCat[c.category] ||= []).push(c); });
   const source = data.charges[0]?.source;
