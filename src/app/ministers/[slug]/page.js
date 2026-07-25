@@ -39,6 +39,8 @@ export default async function MinisterPage({ params }) {
   const confColor = CONF_COLORS[confLevel] || '#ff5252';
   const cases = m['Pending Court Cases'] || 0;
   const charges = m['Total Charges'] || 0;
+  const pcsLo = m['PCS Lower (5%)']; const pcsHi = m['PCS Upper (95%)'];
+  const rankLo = m['Rank Low']; const rankHi = m['Rank High'];
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -83,9 +85,18 @@ export default async function MinisterPage({ params }) {
                 {confLevel} Confidence
               </span>
             </div>
-            <div className="score-bar mb-3">
-              <div className="score-fill" style={{ width: `${pcs}%`, background: bandColor }} />
-            </div>
+            {pcsLo != null && pcsHi != null && (
+              <div className="mb-3">
+                <div className="score-bar relative">
+                  <div className="absolute h-full rounded" style={{ left: `${pcsLo}%`, width: `${pcsHi - pcsLo}%`, background: bandColor + '55' }} />
+                  <div className="score-fill" style={{ width: `${pcs}%`, background: 'transparent', borderRight: `2px solid ${bandColor}` }} />
+                </div>
+                <div className="text-xs text-[#888] mt-1">
+                  Median <strong style={{ color: bandColor }}>{pcs}</strong> · 90% credible interval <strong>{pcsLo}–{pcsHi}</strong>
+                  {rankLo != null && ` · rank #${rankLo}${rankHi !== rankLo ? `–${rankHi}` : ''} of 30`}
+                </div>
+              </div>
+            )}
             <div className="bg-[#2a1a1a] border border-[#ff525233] rounded-lg p-3 text-xs text-[#ffab91]">
               ⚠ <strong>Preliminary — based on 2 of 5 factors.</strong> This score currently uses only official
               ADR sworn-affidavit data (integrity + disclosure). Legislative performance, delivery, and citizen
@@ -139,10 +150,16 @@ export default async function MinisterPage({ params }) {
       <div className="minister-card p-6 mb-6">
         <h2 className="text-lg font-bold text-white mb-3">🧮 How this score is calculated</h2>
         <div className="bg-[#0d0d1a] rounded-lg p-4 font-mono text-xs text-[#8ab4f8] mb-3 overflow-x-auto">
-          PCS = 100 × ( 0.70 · Integrity + 0.30 · Transparency )<br/>
-          Integrity = exp( −0.50·convictions − 0.035·Σ(severity × pending_charges) )<br/>
-          Transparency = 0.75 · disclosure_completeness + 0.25 · data_freshness
+          PCS = 100 × ( Integrity^wI × Transparency^wT )   ← weighted geometric mean<br/>
+          Integrity = exp( −λ · Σ severity × pending_charges ),  convictions weighted 10×<br/>
+          90% credible interval from 1,500 Monte-Carlo draws over wI∈[.6,.8], λ∈[.025,.05]
         </div>
+        <p className="text-xs text-[#888] leading-relaxed mb-2">
+          <strong>Method (OECD Handbook on Composite Indicators + World Bank WGI):</strong> geometric aggregation
+          means a low integrity score <em>cannot</em> be offset by high disclosure — the two are non-compensatory.
+          Weights and severity constants are varied across plausible ranges in a Monte-Carlo simulation, so the score
+          is reported as a median with a 90% credible interval and a rank range — not false-precision single number.
+        </p>
         <p className="text-xs text-[#888] leading-relaxed">
           Every input comes from this minister&apos;s official sworn affidavit filed with the Election Commission,
           published by the Association for Democratic Reforms (ADR/MyNeta). This is a transparency layer, not a court —

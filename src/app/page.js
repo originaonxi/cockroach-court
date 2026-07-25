@@ -50,6 +50,8 @@ export default async function HomePage() {
           const bandColor = BAND_COLORS[band] || scoreColor(pcs);
           const cases = m['Pending Court Cases'] || 0;
           const charges = m['Total Charges'] || 0;
+          const lo = m['PCS Lower (5%)']; const hi = m['PCS Upper (95%)'];
+          const rLo = m['Rank Low']; const rHi = m['Rank High'];
 
           return (
             <a key={m.id} href={`/ministers/${m.slug}`} className="minister-card p-5 block no-underline text-inherit">
@@ -79,7 +81,10 @@ export default async function HomePage() {
                 <div className="score-bar">
                   <div className="score-fill" style={{ width: `${pcs}%`, background: bandColor }} />
                 </div>
-                <div className="text-[10px] text-[#555] mt-1">{conf} confidence · 2 of 5 factors</div>
+                <div className="text-[10px] text-[#555] mt-1">
+                  {lo != null && hi != null ? `90% CI: ${lo}–${hi}` : `${conf} confidence`}
+                  {rLo != null && rHi != null ? ` · rank #${rLo}${rHi !== rLo ? `–${rHi}` : ''}` : ''}
+                </div>
               </div>
 
               {/* Stats row */}
