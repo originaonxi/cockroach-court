@@ -2,16 +2,25 @@ import { fetchAllMinisters } from '@/lib/airtable';
 
 export const dynamic = 'force-dynamic';
 
-const SCORE_COLOR = (score) => {
-  if (score >= 7) return '#00c853';
-  if (score >= 5) return '#64dd17';
-  if (score >= 3) return '#ff9100';
+const BAND_COLORS = {
+  'Strong': '#00c853',
+  'Stable': '#64dd17',
+  'Watch': '#ff9100',
+  'Elevated Legal Exposure': '#ff5252',
+  'High Legal Exposure': '#ff1744',
+};
+
+const scoreColor = (s) => {
+  if (s >= 80) return '#00c853';
+  if (s >= 60) return '#64dd17';
+  if (s >= 40) return '#ff9100';
+  if (s >= 20) return '#ff5252';
   return '#ff1744';
 };
 
 export default async function HomePage() {
   const ministers = await fetchAllMinisters();
-  const ranked = [...ministers].sort((a, b) => (b['Public Confidence Score'] || b['Citizen Support Score'] || 0) - (a['Public Confidence Score'] || a['Citizen Support Score'] || 0));
+  const ranked = [...ministers].sort((a, b) => (b['Public Confidence Score'] ?? 0) - (a['Public Confidence Score'] ?? 0));
 
   return (
     <div>
@@ -22,30 +31,32 @@ export default async function HomePage() {
           <span className="text-[#f5c518]">Trust Layer</span>
         </h1>
         <p className="text-lg text-[#888] max-w-2xl mx-auto">
-          Evidence-based Public Confidence Scores for every Union Cabinet minister. Tracked live from official government data sources.
+          Evidence-based Public Confidence Scores for every Union Cabinet minister, computed from official
+          ADR sworn-affidavit data. Transparent maths. Not a court.
         </p>
         <div className="flex items-center justify-center gap-6 mt-4 text-sm text-[#666]">
           <span>⬡ {ministers.length} ministers</span>
-          <span>⬡ Evidence-based</span>
-          <span>⬡ 10 linked data sources</span>
+          <span>⬡ Model v2.0</span>
+          <span>⬡ 2 of 5 factors live</span>
         </div>
       </div>
 
       {/* MINISTERS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {ranked.map((m, i) => {
-          const score = m['Public Confidence Score'] || m['Citizen Support Score'] || 0;
-          const evidenceScore = m['Evidence Confidence Level'] || m['Resign Demand Score'] || 0;
-          const status = (m['Status'] || 'Clean').replace(/\s+/g, '-');
+          const pcs = m['Public Confidence Score'] ?? 0;
+          const band = m['Score Band'] || 'Watch';
+          const conf = m['Confidence Level'] || 'Low';
+          const bandColor = BAND_COLORS[band] || scoreColor(pcs);
           const cases = m['Pending Court Cases'] || 0;
-          const cag = m['CAG Flags'] || 0;
+          const charges = m['Total Charges'] || 0;
 
           return (
             <a key={m.id} href={`/ministers/${m.slug}`} className="minister-card p-5 block no-underline text-inherit">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[#555] text-xs font-mono">#{i + 1}</span>
-                <span className={`badge status-${status}`}>
-                  {status.replace(/-/g, ' ')}
+                <span className="badge" style={{ background: bandColor + '22', color: bandColor, border: `1px solid ${bandColor}44` }}>
+                  {band}
                 </span>
               </div>
 
@@ -60,40 +71,37 @@ export default async function HomePage() {
               </div>
 
               {/* Public Confidence Score */}
-              <div className="mb-2">
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-[#888]">Public Confidence</span>
-                  <span className="font-bold" style={{ color: SCORE_COLOR(score) }}>{score.toFixed(1)}</span>
-                </div>
-                <div className="score-bar">
-                  <div className="score-fill" style={{ width: `${score * 10}%`, background: SCORE_COLOR(score) }} />
-                </div>
-              </div>
-
-              {/* Evidence Confidence Level */}
               <div className="mb-3">
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-[#888]">Evidence Level</span>
-                  <span className="font-bold" style={{ color: evidenceScore > 5 ? '#ff1744' : '#888' }}>{evidenceScore.toFixed(1)}</span>
+                <div className="flex justify-between items-baseline text-xs mb-1">
+                  <span className="text-[#888]">Public Confidence Score</span>
+                  <span className="font-bold text-lg" style={{ color: bandColor }}>{pcs}<span className="text-[#555] text-xs">/100</span></span>
                 </div>
                 <div className="score-bar">
-                  <div className="score-fill" style={{ width: `${evidenceScore * 10}%`, background: evidenceScore > 5 ? '#ff1744' : '#555' }} />
+                  <div className="score-fill" style={{ width: `${pcs}%`, background: bandColor }} />
                 </div>
+                <div className="text-[10px] text-[#555] mt-1">{conf} confidence · 2 of 5 factors</div>
               </div>
 
               {/* Stats row */}
               <div className="flex gap-3 text-xs text-[#666] pt-2 border-t border-[#2a2a4a]">
-                <span className={cases > 0 ? 'text-[#ff1744] font-semibold' : ''}>
-                  ⚖ {cases} case{cases !== 1 ? 's' : ''}
+                <span className={cases > 0 ? 'text-[#ff9100] font-semibold' : ''}>
+                  ⚖ {cases} pending case{cases !== 1 ? 's' : ''}
                 </span>
-                <span className={cag > 0 ? 'text-[#ff9100] font-semibold' : ''}>
-                  ● {cag} CAG
-                </span>
-                <span>{m['Parliament Attendance %'] || '—'}% attendance</span>
+                <span>{charges} charge{charges !== 1 ? 's' : ''}</span>
+                <span className="text-[#64b5f6]">₹{(m['Declared Assets (Cr)'] ?? 0).toFixed(1)}Cr</span>
               </div>
             </a>
           );
         })}
+      </div>
+
+      {/* METHODOLOGY NOTE */}
+      <div className="mt-10 text-center text-xs text-[#555] max-w-3xl mx-auto">
+        <p>
+          Scores use only official ADR / MyNeta sworn-affidavit data (integrity + disclosure). Pending cases are
+          <strong> unadjudicated allegations shown as public record</strong> — not findings of guilt. Legislative,
+          delivery, and sentiment factors are being added. This is a transparency layer, not a judicial system.
+        </p>
       </div>
     </div>
   );
