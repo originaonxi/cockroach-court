@@ -1,6 +1,7 @@
 import { fetchMinisterBySlug } from '@/lib/airtable';
 import { notFound } from 'next/navigation';
 import DossierPanel from './DossierPanel';
+import ChargesPanel from './ChargesPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -145,6 +146,9 @@ export default async function MinisterPage({ params }) {
           </div>
         ))}
       </div>
+
+      {/* VERIFIED CHARGES — auditable evidence */}
+      <ChargesPanel ministerName={m.Name} />
 
       {/* HOW IT'S CALCULATED */}
       <div className="minister-card p-6 mb-6">
