@@ -4,6 +4,7 @@ import DossierPanel from './DossierPanel';
 import ChargesPanel from './ChargesPanel';
 import FactorPanel from './FactorPanel';
 import CagPanel from './CagPanel';
+import BudgetPanel from './BudgetPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -154,6 +155,9 @@ export default async function MinisterPage({ params }) {
 
       {/* CAG MINISTRY CONTEXT — non-scored */}
       <CagPanel ministry={m.Ministry} />
+
+      {/* MINISTRY BUDGET CONTEXT — sourced, non-scored */}
+      <BudgetPanel ministry={m.Ministry} />
 
       {/* HOW IT'S CALCULATED */}
       <div className="minister-card p-6 mb-6">
