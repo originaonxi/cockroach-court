@@ -9,11 +9,12 @@ export async function GET(request, { params }) {
   if (!PAT || !BASE_ID) return NextResponse.json({ error: 'no creds' }, { status: 500 });
   const base = new Airtable({ apiKey: PAT }).base(BASE_ID);
   try {
-    // match any CAG flag whose Ministry text overlaps the minister's ministry
     const recs = await base('tbliVqXaVuhHp2q0G').select({ maxRecords: 100 }).all();
     const key = name.toLowerCase();
     const flags = recs
       .map(r => r.fields)
+      // Only ever surface findings sourced to a specific CAG report. Unverified rows never reach the public.
+      .filter(f => (f['Data Status'] || '') === 'Verified (report-cited)')
       .filter(f => {
         const m = (f['Ministry'] || '').toLowerCase();
         return m && (key.includes(m) || m.includes(key.split(',')[0].trim()) ||
@@ -22,7 +23,7 @@ export async function GET(request, { params }) {
       .map(f => ({
         ministry: f['Ministry'] || '',
         year: f['Audit Year'] || '',
-        amount: f['Amount Flagged (Cr)'] || null,
+        amount: f['Amount Flagged (Cr)'] ?? null,
         nature: f['Nature of Objection'] || '',
         type: f['Objection Type'] || '',
         url: f['CAG Report URL'] || '',
