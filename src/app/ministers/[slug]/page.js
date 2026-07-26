@@ -241,7 +241,7 @@ export default async function MinisterPage({ params }) {
         <div className="minister-card p-6">
           <h2 className="text-lg font-bold text-white mb-3">⬡ Public Record Notes</h2>
           <p className="text-sm text-[#aaa] leading-relaxed">{m['Notes']}</p>
-          <p className="text-xs text-[#555] mt-4">Last updated: July 25, 2026 · Model v2.0</p>
+          <p className="text-xs text-[#555] mt-4">Model v4.0 · scores from ADR affidavits (2024 where available) · recomputed with corrected data</p>
         </div>
       )}
     </div>
