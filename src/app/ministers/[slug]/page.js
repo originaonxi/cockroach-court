@@ -2,6 +2,7 @@ import { fetchMinisterBySlug } from '@/lib/airtable';
 import { notFound } from 'next/navigation';
 import DossierPanel from './DossierPanel';
 import ChargesPanel from './ChargesPanel';
+import FactorPanel from './FactorPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -175,6 +176,9 @@ export default async function MinisterPage({ params }) {
           </a>
         )}
       </div>
+
+      {/* FACTOR COVERAGE TRANSPARENCY */}
+      <FactorPanel />
 
       {/* DATA SOURCES */}
       <div className="minister-card p-6 mb-8">
